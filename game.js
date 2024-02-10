@@ -1,3 +1,6 @@
+// additional to check whether the client is on mobile or desktop
+var isMobile= /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
 var buttonColors = ["red", "green", "blue", "yellow"];
 
 var gamePattern = [];
@@ -6,13 +9,36 @@ var userClickedPattern = [];
 var level=0;
 var gameStarted=false;
 
-$(document).on("keypress", function(){
-    if(!gameStarted){
-        gameStarted=true;
-        $("h1").text("Level "+level);
-        nextSequence();
-    }
-})
+// extra -> adding different vibration patterns to different colors
+var vibPattern = {
+    blue:[100, 50, 100, 50, 100],
+    green:[200, 100, 200],
+    yellow:[50, 25, 50, 25, 50, 25, 50],
+    red:[500]
+};
+
+// if mobile device then keypress will not be feasible -> handling it
+if(isMobile){
+    $(document).on("click", function(){
+        if(!gameStarted){
+            gameStarted=true;
+            $("h1").text("Level "+level);
+
+            vibrateDuration(80);   // adding vibration if client side is mobile device
+
+            nextSequence();
+        }
+    })
+}
+else{
+    $(document).on("keypress", function(){
+        if(!gameStarted){
+            gameStarted=true;
+            $("h1").text("Level "+level);
+            nextSequence();
+        }
+    })
+}
 
 
 // push the user-clicked pattern in the userchosen pattern
@@ -22,7 +48,12 @@ $(".btn").click(function () {
         userClickedPattern.push(userChosenColor);
     
         playSound(userChosenColor);
+
+        // extra for vibration
+        vibratePattern(vibPattern.userChosenColor);
+
         animatePress(userChosenColor);
+
     
         checkAnswer(userClickedPattern.length-1);
     }
@@ -44,6 +75,10 @@ function checkAnswer(currentLevel) {
         playSound("wrong");
         $("body").addClass("game-over");
         $("#level-title").text("Game Over, Press Any Key to Restart");
+
+        // extra adding vibration
+        vibrateDuration(200);
+
         setTimeout(function () {
             $("body").removeClass("game-over");
           }, 200);
@@ -60,6 +95,10 @@ function nextSequence() {
     gamePattern.push(randomChosenColor);
 
     animateButton(randomChosenColor);
+
+    // extra for vibration
+    vibratePattern(vibPattern.randomChosenColor);
+
     playSound(randomChosenColor);
 
 }
@@ -83,6 +122,16 @@ function animatePress(currentColor) {
     setTimeout(function () {
         $("#" + currentColor).removeClass("pressed");
     }, 100);
+}
+
+
+function vibrateDuration(duration){
+    navigator.vibrate(duration);
+}
+
+
+function vibratePattern(pattern){
+    navigator.vibrate(pattern);
 }
 
 function startOver(){
