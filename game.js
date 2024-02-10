@@ -1,6 +1,6 @@
 // additional to check whether the client is on mobile or desktop
 var isMobile= /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-
+console.log(isMobile);
 var buttonColors = ["red", "green", "blue", "yellow"];
 
 var gamePattern = [];
@@ -24,13 +24,14 @@ if(isMobile){
             gameStarted=true;
             $("h1").text("Level "+level);
 
-            vibrateDuration(80);   // adding vibration if client side is mobile device
-
+            navigator.vibrate(80);   // adding vibration if client side is mobile devic
+            setTimeout(() => {
+                
+            }, 80);
             nextSequence();
         }
     })
-}
-else{
+} else{
     $(document).on("keypress", function(){
         if(!gameStarted){
             gameStarted=true;
@@ -122,11 +123,6 @@ function animatePress(currentColor) {
     setTimeout(function () {
         $("#" + currentColor).removeClass("pressed");
     }, 100);
-}
-
-
-function vibrateDuration(duration){
-    navigator.vibrate(duration);
 }
 
 
